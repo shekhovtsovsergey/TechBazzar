@@ -2,10 +2,9 @@ package ru.bazzar.core.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.bazzar.api.DiscountDto;
+import ru.bazzar.core.api.DiscountDto;
 import ru.bazzar.core.entities.Product;
-import ru.bazzar.core.servises.DiscountService;
-
+import ru.bazzar.core.services.DiscountService;
 import java.util.List;
 
 @RestController
@@ -15,12 +14,12 @@ public class DiscountController {
     private final DiscountService discountService;
 
     @PostMapping("/new")
-    public void save(@RequestBody DiscountDto discountDto) {
-        discountService.save(discountDto);
+    public void saveDto(@RequestBody DiscountDto discountDto) {
+        discountService.saveDto(discountDto);
     }
 
     @PostMapping("/update")
-    public void update(@RequestBody DiscountDto discountDto) {
+    public void updateDto(@RequestBody DiscountDto discountDto) {
         discountService.update(discountDto);
     }
 
@@ -30,17 +29,18 @@ public class DiscountController {
     }
 
     @GetMapping("/add/{id}")
-    public void add(@PathVariable Long id) {
-        discountService.add(id);
+    public void addToList(@PathVariable Long id) {
+        discountService.addToList(id);
     }
 
     @GetMapping("/remove/{id}")
-    public void remove(@PathVariable Long id) {
-        discountService.remove(id);
+    public void deleteByIdFromList(@PathVariable Long id) {
+        discountService.removeFromList(id);
     }
 
     @GetMapping("/clear")
     public void clear() {
-        discountService.clear();
+        discountService.clearList();
     }
+
 }

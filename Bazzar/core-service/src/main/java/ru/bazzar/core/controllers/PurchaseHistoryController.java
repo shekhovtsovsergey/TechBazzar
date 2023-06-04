@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.bazzar.api.PurchaseHistoryDto;
+import ru.bazzar.core.api.PurchaseHistoryDto;
 import ru.bazzar.core.converters.PurchaseHistoryConverter;
-import ru.bazzar.core.servises.PurchaseHistoryService;
+import ru.bazzar.core.services.PurchaseHistoryService;
 
 import java.util.List;
 import java.util.stream.Collectors;

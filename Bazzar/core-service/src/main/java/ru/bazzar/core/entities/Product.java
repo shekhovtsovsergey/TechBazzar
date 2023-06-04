@@ -1,11 +1,17 @@
 package ru.bazzar.core.entities;
 
+import jdk.jfr.BooleanFlag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 @Entity
@@ -17,21 +23,35 @@ import java.math.BigDecimal;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "id")
-    private Long id;
+    private Long id;//присваивается БД,
+
     @Column(name = "title")
+    @Size(min = 2, max = 100, message = "Поле title должно быть в диапазоне от {min} до {max} символов.")
     private String title;
+
     @Column(name = "description")
+    @Size(min = 10, max = 1000, message = "Поле description должно быть в диапазоне от {min} до {max} символов.")
     private String description;
-    @ManyToOne
-    @JoinColumn(name = "organization")
-    private Organization organization;
+
+    @Column(name = "organization_title")
+    @Size(min = 1, max = 200, message = "Поле organization_title должно быть в диапазоне от {min} до {max} символов.")
+    private String organizationTitle;
+
     @Column(name = "price")
+    @Digits(integer=8, fraction=2, message = "Поле price должно соответствовать формату: {integer} знаков до, и {fraction} знаков после точки (денежный формат).")
     private BigDecimal price;
+
     @Column(name = "quantity")
+    @Min(value = 0, message = "Поле quantity не может быть отрицательным")
     private int quantity;
+
     @Column(name = "is_confirmed")
+    @NotNull(message = "Поле is_confirmed должно быть NotNull.")
+    @BooleanFlag
     private boolean isConfirmed;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "discount_id")
     private Discount discount;
@@ -45,14 +65,13 @@ public class Product {
     - Таблицы характеристик;
     */
 
-
     @Override
     public String toString() {
         return "Product{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", organization=" + organization +
+                ", organizationTitle='" + organizationTitle + '\'' +
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", isConfirmed=" + isConfirmed +
@@ -85,12 +104,12 @@ public class Product {
         this.description = description;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public String getOrganizationTitle() {
+        return organizationTitle;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganizationTitle(String organizationTitle) {
+        this.organizationTitle = organizationTitle;
     }
 
     public BigDecimal getPrice() {
