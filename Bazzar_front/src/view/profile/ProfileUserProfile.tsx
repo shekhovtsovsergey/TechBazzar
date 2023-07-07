@@ -1,17 +1,17 @@
-import {Link} from "react-router-dom";
-import {useAuth} from "../../auth/Auth";
+import {useKeycloak} from "@react-keycloak/web";
+import React from 'react';
 import {primary} from "../../Colors";
-import {UserNew} from "../../newInterfaces";
 import {getProfileSvg} from "../../Svg";
+import {User} from "../../newInterfaces";
 
 interface ProfileUserProfileProps {
-    user: UserNew
+    user: User
 }
 
 export function ProfileUserProfile(props: ProfileUserProfileProps) {
-    let auth = useAuth();
+    const {keycloak} = useKeycloak();
     return (
-        <Link style={{color: primary}} to="/profile/userProfile" className="text-decoration-none">
+        <div style={{color: primary}} /*to="/profile/userProfile"*/ className="text-decoration-none">
             <div className="card border-0">
                 <div className="card border-0">
                     <div className="d-flex align-items-center">
@@ -20,19 +20,14 @@ export function ProfileUserProfile(props: ProfileUserProfileProps) {
                         </div>
                         <div className="">
                             <div className="card-body">
-                                <h5 className="card-title">{props.user.username}</h5>
+                                <h5 className="card-title">Почта - {props.user.username}</h5>
+                                <h5 className="card-title">Имя - {keycloak.tokenParsed?.given_name}</h5>
+                                <h5 className="card-title">Фамилия - {keycloak.tokenParsed?.family_name}</h5>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div className="">
-                    <div className="card-body">
-                        <small className="card-title text-sm-start">e-mail: {props.user.email}</small>
-                        <br/>
-                    </div>
-                </div>
             </div>
-        </Link>
+        </div>
     )
 }

@@ -1,28 +1,30 @@
+import {AxiosResponse} from "axios";
+import React, {useEffect, useState} from "react";
+import {apiGetMyUser} from "../../api/UserApi";
+import {useError} from "../../auth/ErrorProvider";
+import {useRole} from "../../auth/Role";
+import {defaultUserNew} from "../../empty";
+import {User} from "../../newInterfaces";
+import {ProfileAdminMenu} from "./ProfileAdminMenu";
 import {ProfileBalance} from "./ProfileBalance";
 import {ProfileOrders} from "./ProfileOrders";
-import {ProfileUserProfile} from "./ProfileUserProfile";
-import {useRole} from "../../auth/Role";
-import {ProfileAdminMenu} from "./ProfileAdminMenu";
 import {ProfileOrganization} from "./ProfileOrganization";
-import {useEffect, useState} from "react";
-import {UserNew} from "../../newInterfaces";
-import {defaultUserNew} from "../../empty";
-import {apiGetMyUser} from "../../api/UserApi";
-import {AxiosResponse} from "axios";
+import {ProfilePurchase} from "./ProfilePurchase";
+import {ProfileUserProfile} from "./ProfileUserProfile";
 
 export function Profile() {
-    let role = useRole();
-    let [isLoad, setLoad] = useState(false);
-    let [user, setUser] = useState<UserNew>(defaultUserNew);
+    const role = useRole();
+    const [user, setUser] = useState<User>(defaultUserNew);
+    const error = useError();
 
     useEffect(() => {
-        if (!isLoad) {
-            apiGetMyUser().then((r: AxiosResponse<UserNew>) => {
-                    setLoad(true);
-                    setUser(r.data);
-            });
-        }
-    });
+        apiGetMyUser().then((r: AxiosResponse<User>) => {
+            setUser(r.data);
+        }).catch(() => {
+            error.setErrors("Не удалось получить user", false, false, "");
+            error.setShow(true)
+        });
+    }, []);
 
     return (
         <div className="row justify-content-center m-2">
@@ -40,6 +42,11 @@ export function Profile() {
                     <ProfileOrganization/>
                 </div>
                 {role.isAdmin ? <div className="col rounded shadow m-2"><ProfileAdminMenu/></div> : <div></div>}
+            </div>
+            <div className="row">
+                <div className="col rounded shadow m-2">
+                    <ProfilePurchase/>
+                </div>
             </div>
         </div>
     )

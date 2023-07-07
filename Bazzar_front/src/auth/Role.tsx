@@ -1,32 +1,32 @@
+import {useKeycloak} from "@react-keycloak/web";
 import React from "react";
 import {Navigate} from "react-router-dom";
-import {useAuth} from "./Auth";
 import {ADMIN} from "./Roles";
 
 export interface RoleContextType {
     isAdmin: boolean,
-    isSuperAdmin: boolean,
 }
 
-let RoleContext = React.createContext<RoleContextType>(null!);
+const RoleContext = React.createContext<RoleContextType>("" as unknown as RoleContextType);
 
 export function RoleProvider({children}: { children: React.ReactNode }) {
     let isAdmin = false;
-    let isSuperAdmin = false;
-    let auth = useAuth();
-
-    if (auth.user !== null) {
-        auth.roles.forEach(role => {
-            console.log("render")
+    const {keycloak, initialized} = useKeycloak();
+    if (keycloak.authenticated) {
+        keycloak?.realmAccess?.roles.forEach(role => {
             if (role === ADMIN) {
                 isAdmin = true;
             }
         })
     } else {
         isAdmin = false;
-        isSuperAdmin = false;
     }
-    let value = {isAdmin, isSuperAdmin};
+
+    /*if (keycloak.authenticated && initialized && keycloak.token) {
+        setTokenKeyCloak(keycloak?.token);
+    }*/
+
+    const value = {isAdmin};
 
     return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;
 }
@@ -36,7 +36,7 @@ export function useRole() {
 }
 
 export function RequireRoleADMIN({children}: { children: JSX.Element }) {
-    let role = useRole();
+    const role = useRole();
 
     if (!role.isAdmin) {
         return <Navigate to={"/home"} replace/>;

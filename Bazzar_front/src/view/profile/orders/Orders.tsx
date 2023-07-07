@@ -1,24 +1,19 @@
-import {useEffect, useState} from "react";
-import {OrderTab} from "./OrderTab";
-import {apiGetUserOrders} from "../../../api/OrderApi";
-import {emptyOrderNew} from "../../../empty";
 import {AxiosResponse} from "axios";
-import {OrderNew} from "../../../newInterfaces";
+import React, {useEffect, useState} from "react";
+import {apiGetUserOrders} from "../../../api/OrderApi";
+import {Order} from "../../../newInterfaces";
+import {OrderTab} from "./OrderTab";
 
 export function Orders() {
-    const [Orders, setOrders] = useState({
-        orders: Array.of(emptyOrderNew),
-    })
+    const [Orders, setOrders] = useState<Array<Order>>()
     const [load, setLoad] = useState(false);
 
     useEffect(() => {
             if (!load) {
-                console.log("useEffect")
-                apiGetUserOrders().then((orders: AxiosResponse<Array<OrderNew>>) => {
-                    console.log(orders.data)
-                    setOrders({orders: orders.data});
+                apiGetUserOrders().then((orders: AxiosResponse<Array<Order>>) => {
+                    setOrders(orders.data);
+                    setLoad(true);
                 })
-                setLoad(true);
             }
         }, [load]
     );
@@ -28,8 +23,11 @@ export function Orders() {
     }
 
     return (
-        <div className="container-fluid">
-            {Orders.orders.map((order) => <OrderTab onReloadOrder={onReloadOrder} key={order.id} order={order}/>)}
+        <div>
+            {Orders && Orders.length === 0 && <span className="text-center">У вас нет заказов</span>}
+            <div className="container-fluid">
+                {Orders?.map((order) => <OrderTab onReloadOrder={onReloadOrder} key={order.id} order={order}/>)}
+            </div>
         </div>
     )
 }

@@ -1,4 +1,4 @@
-export interface ProductNew {
+export interface Product {
     id?: number;
     title: string;
     description: string;
@@ -6,53 +6,75 @@ export interface ProductNew {
     price: number;
     quantity: number;
     isConfirmed: boolean;
-    discount: DiscountNew|null;
-    review: ReviewNew|null;
+    discount: Discount|null;
+    review: Review|null;
+    characteristicsDto: Array<Characteristic>;
+    pictureId : number;
 }
 
-export interface ProductCreateNew {
+export interface ProductForCreate {
     id?: number;
-    title: string;
-    description: string;
-    organizationTitle: string;
-    price: number;
-    quantity: number;
+    title?: string;
+    description?: string;
+    organizationTitle?: string;
+    price?: number;
+    quantity?: number;
+    characteristicsDto?: Array<string>;
+    pictureId?: number;
 }
 
-export interface DiscountNew {
+export interface ProductForCreate2 {
+    id?: number;
+    title?: string;
+    description?: string;
+    organizationTitle?: string;
+    price?: number;
+    quantity?: number;
+    characteristicsDto?: Array<Characteristic>;
+    pictureId?: number;
+}
+
+export interface Characteristic {
+    id: null | number;
+    name: string;
+    product: null;
+}
+
+export interface Discount {
     id: number;
     dis: number;
     startDate: Date;
     expiryDate: Date;
 }
 
-export interface DiscountCreateNew {
+export interface DiscountCreate {
     id: number;
-    products: Array<ProductNew>;
+    products: Array<Product>;
     discount: number;
     startDate: Date;
     expiryDate: Date;
 }
 
-export interface ReviewNew {
+export interface Review {
     id: number;
     username: string;
+    fullName: string;
     reviewText: string;
     mark: number;
 }
 
-export interface PageProductNew {
-    items: Array<ProductNew>;
+export interface PageProduct {
+    items: Array<Product>;
     page: number;
     totalPages: number;
 }
 
-export interface CartNew {
+export interface Cart {
     totalPrice: number;
-    items: Array<CartItemNew>;
+    items: Array<CartItem>;
 }
 
-export interface CartItemNew {
+export interface CartItem {
     productId: number;
     productTitle: string;
     quantity: number;
@@ -60,47 +82,43 @@ export interface CartItemNew {
     price: number;
 }
 
-export interface OrderNew {
+export interface Order {
     id: number;
     username: string;
-    items: Array<OrderItemNew>;
+    items: Array<OrderItem>;
     totalPrice: number;
     createdAt: string;
     status: boolean;
 }
 
-export interface OrderItemNew {
+export interface OrderItem {
     id: number;
     productTitle: string;
+    productId: number;
     orderId: number;
     quantity: number;
     pricePerProduct: number;
     price: number;
 }
 
-export interface AuthResponseNew {
-    token: string;
-}
-
-export interface UserNew {
+export interface User {
     id: number;
-    email: string;
     username: string;
-    password?: string;
     balance: number;
     active: boolean;
 }
 
-export interface FilterNew {
+export interface Filter {
     minPrice: number;
     maxPrice: number;
+    organizationTitle: string;
 }
 
 export interface PurchaseHistory {
     id: number;
     email: string;
     productTitle: string;
-    organization: string;
+    organizationTitle: string;
     quantity: number;
     datePurchase: Date;
 }
@@ -111,11 +129,7 @@ export interface FindRequest {
     min_price?: number,
     limit?: number,
     title_part?: string,
-}
-
-export interface Role {
-    id: number;
-    name: string;
+    organization_title?: string,
 }
 
 export interface Organization {
@@ -136,4 +150,17 @@ export interface OrganizationCreate {
 export interface ErrorMessage {
     message: string;
     code: number;
+}
+
+export interface Picture {
+    bytes: string;
+    contentType: string;
+}
+
+export interface ReviewDto {
+    username: string;
+    fullName: string;
+    reviewText: string;
+    mark: number;
+    productId: number;
 }

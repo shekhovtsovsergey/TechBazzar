@@ -1,68 +1,86 @@
-import {apiRemoveItem, apiUpdateQuantity} from "../../api/CartApi";
-import {useEffect, useState} from "react";
-import {useAuth} from "../../auth/Auth";
+import {AxiosError, AxiosResponse} from "axios";
+import React, {useEffect, useState} from 'react';
 import {primary} from "../../Colors";
-import {CartItemNew} from "../../newInterfaces";
+import {apiRemoveItem, apiUpdateQuantity} from "../../api/CartApi";
+import {apiGetPicByProductId, apiGetProductPic} from "../../api/PictureApi";
+import {CartItem, Picture} from "../../newInterfaces";
 
 export interface ProductCart {
-    product: CartItemNew;
+    product: CartItem;
     onReloadCart: () => void;
 }
 
 export function CartCard(props: ProductCart) {
     const [quantity, setQuantity] = useState(props.product.quantity);
-    const [product, setProduct] = useState(props.product);
     const [isQuantityMore, setQuantityMore] = useState(false);
-    let auth = useAuth();
+    const [pic, setPic] = useState<string>("");
+
+    useEffect(() => {
+        if (props.product.productId !== 0) {
+            apiGetPicByProductId(props.product.productId).then((response: AxiosResponse<Picture>) => {
+                const base64String = response.data.bytes;
+                const contentType = response.data.contentType;
+                const dataURL = `data:${contentType};base64,${base64String}`;
+                setPic(dataURL);
+            }).catch((error) => {
+                // eslint-disable-next-line no-console
+                console.error('Error:', error);
+            });
+        }
+        return () => URL.revokeObjectURL(pic);
+    }, [props.product.productId]);
 
     useEffect(() => {
         if (quantity > 9) {
             setQuantityMore(true);
         }
-    })
+    }, [quantity])
 
     const handleChange = (event: any) => {
-        let value = quantityValidate(event.currentTarget.value);
+        const value = quantityValidate(event.currentTarget.value);
         if (value < 10) {
-            apiUpdateQuantity(product, value, auth.isAuth).then((data) => {
-                setQuantity(value);
-                props.onReloadCart()
-                setProduct(props.product);
-            })
+            updateQuantity(value);
         } else {
             setQuantityMore(true);
         }
     }
 
     const customHandleChange = (event: any) => {
-        let value = quantityValidate(event.currentTarget.value);
-        apiUpdateQuantity(product, value, auth.isAuth).then((data) => {
+        const value = quantityValidate(event.currentTarget.value);
+        updateQuantity(value);
+    }
+
+    const updateQuantity = (value: number) => {
+        apiUpdateQuantity(props.product, value - quantity).then(() => {
             setQuantity(value);
             props.onReloadCart()
-            setProduct(props.product);
-        })
+        }).catch((reason: AxiosError) => {
+            // eslint-disable-next-line no-console
+            console.error(reason)
+        });
     }
 
     return (
         <div className="card border-0 border-bottom mb-3" style={{maxWidth: "none"}}>
             <div className="d-flex">
                 <div className="w-25 align-self-center">
-                    {/*TODO: add image*/}
-                    <img src="https://i.pinimg.com/originals/ae/8a/c2/ae8ac2fa217d23aadcc913989fcc34a2.png" className="rounded"
+                    <img alt={props.product.productTitle}
+                         src={pic}
+                         className="rounded"
                          style={{maxWidth: "100px", maxHeight: "100px", minWidth: "100px", minHeight: "100px"}}
                     />
                 </div>
                 <div className="d-flex w-100">
                     <div className="align-self-center flex-grow-1" style={{textAlign: "start", width: "100%"}}>
                         <div className="card-body">
-                            <h5 className="card-title">{product.productTitle}</h5>
+                            <h5 className="card-title">{props.product.productTitle}</h5>
                             <p className="card-text"><small
-                                className="text-muted">{product.pricePerProduct} ₽/ one</small></p>
+                                className="text-muted">{props.product.pricePerProduct} ₽/ один</small></p>
                             <p className="card-text"><small
-                                className="text-muted">{product.price} ₽/ total</small></p>
+                                className="text-muted">{props.product.price} ₽/ всего</small></p>
                             <button type="button" onClick={() => {
-                                apiRemoveItem(product, auth.isAuth).then(resp => resp.status === 200 ? props.onReloadCart() : false);
-                            }} className="btn btn-sm text-white" style={{backgroundColor: primary}}>Delete
+                                apiRemoveItem(props.product).then(resp => resp.status === 200 ? props.onReloadCart() : false);
+                            }} className="btn btn-sm text-white" style={{backgroundColor: primary}}>Удалить
                             </button>
                         </div>
                     </div>

@@ -1,17 +1,17 @@
-import {useState} from "react";
 import {Dialog, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import {AxiosResponse} from "axios";
+import React, {useContext, useState} from 'react';
+import {apiGetUserById} from "../../../api/UserApi";
+import {User} from "../../../newInterfaces";
 import {UpBalance} from "./UpBalance";
-import {UserNew} from "../../../newInterfaces";
-import {ChangeRoles} from "./ChangeRoles";
 import {UserActivity} from "./UserActivity";
 
 interface AdminMenuUserMenuProps {
-    user: UserNew
+    user: User
 }
 
 export function AdminMenuUserMenu({user}: AdminMenuUserMenuProps) {
     const [open, setOpen] = useState(false);
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -29,11 +29,6 @@ export function AdminMenuUserMenu({user}: AdminMenuUserMenuProps) {
                     <DialogContentText>
                         <div className="d-flex justify-content-between mb-3">
                             Баланс - {<UpBalance user={user}/>}
-                        </div>
-                    </DialogContentText>
-                    <DialogContentText>
-                        <div className="d-flex justify-content-between mb-3">
-                            Роли - {<ChangeRoles user={user}/>}
                         </div>
                     </DialogContentText>
                     <DialogContentText>

@@ -1,22 +1,18 @@
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
-import {useEffect, useState} from "react";
-import {apiGetMyUser, apiGetMyUserById} from "../../../api/UserApi";
-import {AxiosResponse} from "axios";
-import {OrderNew, UserNew} from "../../../newInterfaces";
-import {useAuth} from "../../../auth/Auth";
-import {apiOrderRefund, apiOrderPayment} from "../../../api/OrderApi";
+import {Button, Dialog, DialogActions, DialogTitle} from "@mui/material";
+import React, {useState} from "react";
+import {apiOrderRefund} from "../../../api/OrderApi";
+import {useError} from "../../../auth/ErrorProvider";
+import {Order} from "../../../newInterfaces";
 
 interface PayFormProps {
-    order: OrderNew
+    order: Order
     onReloadOrder: () => void
     setStatus: (status: boolean) => void
 }
 
 export function DeleteOrderForm(props: PayFormProps) {
-    let auth = useAuth();
-
     const [open, setOpen] = useState(false);
-
+    const error = useError();
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -26,24 +22,43 @@ export function DeleteOrderForm(props: PayFormProps) {
         setOpen(false);
     };
 
-    const deleteHandle = () => {
-        apiOrderRefund(props.order.id).then((resp) => {
-            if (resp.statusText === "OK") {
-                handleClose();
-                props.onReloadOrder();
-            }
+    const refundHandle = () => {
+        apiOrderRefund(props.order.id).then(() => {
+            handleClose();
+            props.onReloadOrder();
+        }).catch(() => {
+            handleClose()
+            error.setErrors("Не могу отменить покупку, возможно время отмены прошло", false, false, "");
+            error.setShow(true)
         })
+    };
+
+    const deleteHandle = () => {
+        // delete order
+        console.log("fake delete")
+        error.setErrors("Не реализованно", false, true, "Не реализованно");
+        error.setShow(true)
+        handleClose()
     };
 
     return (
         <div>
-            <button className="btn btn-sm btn-danger" onClick={handleClickOpen}>Отмена</button>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Отмена заказа</DialogTitle>
-                <DialogActions>
-                    <Button onClick={deleteHandle}>Отменить</Button>
-                </DialogActions>
-            </Dialog>
+            { (props.order.status && checkData(props.order.createdAt)) || !props.order.status &&
+                <div>
+                    <button className="btn btn-sm btn-danger" onClick={handleClickOpen}>Отмена</button>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Отмена заказа</DialogTitle>
+                        <DialogActions>
+                            <Button onClick={props.order.status ? refundHandle : deleteHandle}>Отменить</Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
+            }
         </div>
     )
+}
+
+function checkData(date: string): boolean {
+    const newDate = new Date(date);
+    return Date.now() - newDate.getTime() <= 86400000;
 }

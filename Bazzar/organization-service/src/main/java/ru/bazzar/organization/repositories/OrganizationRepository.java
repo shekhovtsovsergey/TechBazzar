@@ -1,6 +1,7 @@
 package ru.bazzar.organization.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.bazzar.organization.entities.Organization;
 
@@ -12,4 +13,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
     Optional<Organization> findByTitleIgnoreCase(String title);
 
     List<Organization> findAllByIsActive(boolean isActive);
+    List<Organization> findAllByOwner(String owner);
+    @Query("select o.title from Organization o order by o.title asc")
+    List<String> getOrganizationTitles();
 }

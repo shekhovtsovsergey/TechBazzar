@@ -21,7 +21,7 @@ public class UserServiceIntegration {
                 .header("username", username)
                 .retrieve()
                 .onStatus(
-                        httpStatus -> httpStatus.value() == HttpStatus.NOT_FOUND.value(),
+                        httpStatus -> httpStatus.value() == HttpStatus.BAD_REQUEST.value(),
                         clientResponse -> Mono.error(new ResourceNotFoundException("Не достаточно средств на счете!"))
                 )
                 .bodyToMono(Void.class)
@@ -69,6 +69,19 @@ public class UserServiceIntegration {
     public void refundProfit(UserDto userDto) {
         userServiceWebClient.post()
                 .uri("api/v1/users/decrease_balance")
+                .bodyValue(userDto)
+                .retrieve()
+                .onStatus(
+                        httpStatus -> httpStatus.value() == HttpStatus.NOT_FOUND.value(),
+                        clientResponse -> Mono.error(new ResourceNotFoundException("Произошла неизвестная ошибка!"))
+                )
+                .bodyToMono(Void.class)
+                .block();
+    }
+
+    public void checkAndCreate(UserDto userDto) {
+        userServiceWebClient.post()
+                .uri("api/v1/users/create")
                 .bodyValue(userDto)
                 .retrieve()
                 .onStatus(

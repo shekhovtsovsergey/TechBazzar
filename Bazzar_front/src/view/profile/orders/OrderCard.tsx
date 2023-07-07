@@ -1,24 +1,43 @@
-import {OrderItemNew, OrderNew} from "../../../newInterfaces";
-import { Review } from "./Review";
+import {AxiosResponse} from "axios";
+import React, {useEffect, useState} from 'react';
+import {apiGetPicByProductId, apiGetProductPic} from "../../../api/PictureApi";
+import {OrderItem, Order, Picture} from "../../../newInterfaces";
+import {ReviewComponent} from "./ReviewComponent";
 
 export interface OrderCardProps {
-    product: OrderItemNew;
-    order: OrderNew;
+    product: OrderItem;
+    order: Order;
 }
 
 export function OrderCard(props: OrderCardProps) {
+    const [pic, setPic] = useState<string>("");
+
+    useEffect(() => {
+        if (props.product.productId !== 0) {
+            apiGetPicByProductId(props.product.productId).then((response: AxiosResponse<Picture>) => {
+                const base64String = response.data.bytes;
+                const contentType = response.data.contentType;
+                const dataURL = `data:${contentType};base64,${base64String}`;
+                setPic(dataURL);
+            }).catch((error) => {
+                // eslint-disable-next-line no-console
+                console.error('Error:', error);
+            });
+        }
+        return () => URL.revokeObjectURL(pic);
+    }, [props.product.orderId]);
+
     return (
 
         <div className="card p-2 m-2 rounded shadow-sm">
             <div className="d-flex justify-content-between">
-                <div className="card-title m-2">{props.product.quantity} product</div>
-                {props.order.status ? <Review/> : ""}
+                <div className="card-title m-2">{props.product.quantity} товар</div>
+                {props.order.status ? <ReviewComponent product={props.product}/> : ""}
             </div>
             <div className="container">
                 <div className="row">
                     <div className="col">
-                        {/*TODO replace this*/}
-                        <img src="https://i.pinimg.com/originals/ae/8a/c2/ae8ac2fa217d23aadcc913989fcc34a2.png"
+                        <img src={pic}
                              className="img-fluid rounded" alt="..."
                              style={{maxWidth: "70px", maxHeight: "70px", minWidth: "70px", minHeight: "70px"}}/>
                     </div>

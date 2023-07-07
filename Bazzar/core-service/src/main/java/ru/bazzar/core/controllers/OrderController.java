@@ -3,6 +3,7 @@ package ru.bazzar.core.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.bazzar.core.api.OrderDto;
 import ru.bazzar.core.api.ResourceNotFoundException;
@@ -20,11 +21,16 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderConverter orderConverter;
 
-    @PostMapping
+    @PostMapping//AOP
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestHeader String username) {
-        System.out.println(username + " оформил заказ!");
+        log.info(username + " оформил заказ!");
         orderService.create(username);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        orderService.delete(id);
     }
 
     @GetMapping
@@ -42,9 +48,14 @@ public class OrderController {
         orderService.refundPayment(username, id);
     }
 
-    @GetMapping("/payment/{id}")
+    @GetMapping("/payment/{id}")//AOP
     public void payment(@RequestHeader String username, @PathVariable Long id) throws ResourceNotFoundException {
         orderService.payment(username, id);
     }
 
+    @ExceptionHandler({ResourceNotFoundException.class})
+    private ResponseEntity<String> handleNotFound(Exception e) {
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

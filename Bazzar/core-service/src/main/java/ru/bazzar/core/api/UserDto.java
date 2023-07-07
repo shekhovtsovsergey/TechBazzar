@@ -1,73 +1,44 @@
 package ru.bazzar.core.api;
 
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
     private Long id;
-    private String email;
-    private String password;
     private String username;
+    private String fullName;
     private BigDecimal balance;
     private boolean active;
 
-    public UserDto() {
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", balance=" + balance +
+                ", active=" + active +
+                '}';
     }
 
-    public UserDto(Long id, String email, String password, String username, BigDecimal balance, boolean active) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.username = username;
-        this.balance = balance;
-        this.active = active;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserDto userDto)) return false;
+        return isActive() == userDto.isActive() && Objects.equals(getId(), userDto.getId()) && Objects.equals(getUsername(), userDto.getUsername()) && Objects.equals(getFullName(), userDto.getFullName()) && Objects.equals(getBalance(), userDto.getBalance());
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUsername(), getFullName(), getBalance(), isActive());
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
 }

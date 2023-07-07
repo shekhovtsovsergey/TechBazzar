@@ -1,28 +1,56 @@
+import {AxiosResponse} from "axios";
+import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
-import React, {useState} from "react";
-import {ProductNew} from "../../newInterfaces";
-import {ChangeProductButton} from "./ChangeProductButton";
-import Box from "@mui/material/Box/Box";
-import {CircularProgress} from "@mui/material";
-import {CircularLoading} from "../CircularLoading";
 import {getMessageSvg, getStarSvg} from "../../Svg";
+import {apiGetProductPic} from "../../api/PictureApi";
+import {apiGetProductMark, apiGetReviewCount} from "../../api/ReviewApi";
+import {Picture, Product} from "../../newInterfaces";
+import {ChangeProductButton} from "./ChangeProductButton";
 
 export interface ProductCard {
-    product: ProductNew,
+    product: Product,
     deleteHandler?: (id: number) => void,
     changeHandler?: (id: number) => void,
     isChanging: boolean,
 }
 
 export function CatalogCard(props: ProductCard) {
-    let [isShown, setIsShown] = useState(false);
-    let [discount, setDiscount] = useState(0);
-    let [mark, setMark] = useState(0);
+    const [isShown, setIsShown] = useState(false);
+    const [discount] = useState(0);
+    const [mark, setMark] = useState(0);
+    const [pic, setPic] = useState<string>("");
+    const[count, setCount] = useState<number>(0);
+
+    useEffect(() => {
+        if (props.product.id) {
+            apiGetProductPic(props.product.pictureId).then((response: AxiosResponse<Picture>) => {
+                const base64String = response.data.bytes;
+                const contentType = response.data.contentType;
+                const dataURL = `data:${contentType};base64,${base64String}`;
+                setPic(dataURL);
+            }).catch((error) => {
+                // eslint-disable-next-line no-console
+                console.error('Error:', error);
+            });
+
+            apiGetProductMark(props.product.id).then((response) => {
+                setMark(response.data);
+            }).catch(() => {
+                setMark(0);
+            });
+
+            apiGetReviewCount(props.product.id).then((response) => {
+                setCount(response.data);
+            }).catch(() => {
+                setCount(0);
+            });
+        }
+        return () => URL.revokeObjectURL(pic);
+    }, [props.product.title]);
 
     return (
-        <div style={{width: "18em", borderStyle: "none", textDecoration: "none", color: "black"}}>
-
-            <Link style={{width: "18em", borderStyle: "none", textDecoration: "none", color: "black"}}
+        <div>
+            <Link style={{width: "15em", height: "20em", borderStyle: "none", textDecoration: "none", color: "black"}}
                   to={`/product/${props.product.title}/${props.product.id}`}
                   className={`card pt-2 row m-1 ${isShown ? "shadow-sm bg-light" : ""}`}
                   onMouseEnter={() => {
@@ -33,9 +61,8 @@ export function CatalogCard(props: ProductCard) {
                   }}>
                 <div className="row flex-grow-1 align-self-center">
                     <div className="align-self-center" style={{maxHeight: "200px"}}>
-                        {/*TODO add image*/}
                         <img
-                            src="https://i.pinimg.com/originals/ae/8a/c2/ae8ac2fa217d23aadcc913989fcc34a2.png"
+                            src={pic}
                             style={{maxHeight: "inherit"}} className="card-img-top"
                             alt={props.product.title}/>
                     </div>
@@ -58,16 +85,14 @@ export function CatalogCard(props: ProductCard) {
                         </span>
                             <span className="text-center">
                             {getMessageSvg(16, 16)}
-                                {/*<span>  {props.product.review.count}</span>*/}
-                                {/*TODO add count*/}
-                                <span>  1</span>
+                                <span>  {count}</span>
                         </span>
                         </div>
                     </div>
                 </div>
             </Link>
             {
-                props.isChanging ? <div className="d-flex mt-1 justify-content-between">
+                props.isChanging ? <div className="mt-1 mb-2">
                     <ChangeProductButton product={props.product} deleteHandler={props.deleteHandler}
                                          changeHandler={props.changeHandler}></ChangeProductButton>
                 </div> : null

@@ -1,31 +1,24 @@
-import {useEffect, useState} from "react";
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from "@mui/material";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import React, {useState} from "react";
 import {primary} from "../../../Colors";
-import {UserNew} from "../../../newInterfaces";
 import {apiBunUser} from "../../../api/UserApi";
+import {User} from "../../../newInterfaces";
 
 interface UserActivityProps {
-    user: UserNew
+    user: User
 }
 
 export function UserActivity({user}: UserActivityProps) {
     const [open, setOpen] = useState(false);
-    const [check, setCheck] = useState(user.active);
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClick = () => {
-        if (check) {
-            console.log("true")
-        } else {
-            if (user.active) {
-                apiBunUser(user.id).then(() => {
-                    setOpen(false);
-                    user.active = false;
-                });
-            }
-        }
+        apiBunUser(user.id).then(() => {
+            setOpen(false);
+            window.location.reload();
+        });
     }
 
     const handleClose = () => {
@@ -42,9 +35,8 @@ export function UserActivity({user}: UserActivityProps) {
                 <DialogTitle>Активность пользователя</DialogTitle>
                 <DialogContent>
                     <div className="form-check form-switch">
-                        <input className="form-check-input" onChange={(event) => setCheck(event.target.checked)}
-                               type="checkbox" defaultChecked={user.active}/>
-                        <label className="form-check-label">активность</label>
+                        <input className="form-check-input" type="checkbox" defaultChecked={user.active}/>
+                        <span className="form-check-label">активность</span>
                     </div>
                 </DialogContent>
                 <DialogActions>

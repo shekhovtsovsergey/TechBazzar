@@ -1,20 +1,25 @@
 import {
-    CartItemNew,
-    CartNew,
-    DiscountNew,
-    FilterNew,
-    OrderItemNew, Organization, OrganizationCreate, ProductCreateNew,
-    ProductNew,
-    ReviewNew,
-    UserNew
+    CartItem,
+    Cart, Characteristic,
+    Discount,
+    Filter,
+    OrderItem, Organization, OrganizationCreate, ProductForCreate,
+    Product,
+    Review,
+    User
 } from "./newInterfaces";
 
-export let emptyCart: CartNew = {
+export const emptyCharacteristic: Characteristic = {
+    id: null,
+    name: "",
+    product: null,
+}
+export const emptyCart: Cart = {
     totalPrice: 0,
     items: Array.of(),
 }
 
-export let emptyCartItemsNew: CartItemNew = {
+export const emptyCartItemsNew: CartItem = {
     productId: 0,
     productTitle: "",
     quantity: 0,
@@ -22,25 +27,27 @@ export let emptyCartItemsNew: CartItemNew = {
     price: 0
 }
 
-export let defaultFilter: FilterNew = {
+export const defaultFilter: Filter = {
     maxPrice: 2147483647,
     minPrice: 1,
+    organizationTitle: "",
 }
-export let emptyDiscountNew: DiscountNew = {
+export const emptyDiscountNew: Discount = {
     id: 0,
     dis: 0,
     startDate: new Date(),
     expiryDate: new Date(),
 }
 
-export let emptyReviewNew: ReviewNew = {
+export const emptyReviewNew: Review = {
     id: 0,
     username: "",
+    fullName: "",
     reviewText: "",
     mark: 0,
 }
 
-export let emptyProductNew: ProductNew = {
+export const emptyProductNew: Product = {
     id: 0,
     title: "",
     description: "",
@@ -50,26 +57,28 @@ export let emptyProductNew: ProductNew = {
     isConfirmed: false,
     discount: emptyDiscountNew,
     review: emptyReviewNew,
+    characteristicsDto: Array.of(emptyCharacteristic),
+    pictureId: 1,
 }
 
-export let defaultUserNew: UserNew = {
+export const defaultUserNew: User = {
     id: -1,
-    email: "",
     username: "",
     balance: 0,
     active: true,
 }
 
-export let emptyOrderItemNew: OrderItemNew = {
+export const emptyOrderItemNew: OrderItem = {
     id: 0,
     productTitle: "",
+    productId: 0,
     orderId: 0,
     quantity: 0,
     pricePerProduct: 0,
     price: 0,
 }
 
-export let emptyOrderNew = {
+export const emptyOrderNew = {
     id: 0,
     username: "",
     items: Array.of(emptyOrderItemNew),
@@ -78,20 +87,22 @@ export let emptyOrderNew = {
     status: false,
 }
 
-export let emptyProductCreateNew: ProductCreateNew = {
+export const emptyProductCreateNew2: ProductForCreate = {
     title: '',
     description: '',
     organizationTitle: '',
     price: 0,
-    quantity: 0
+    quantity: 0,
+    characteristicsDto: Array.of(),
+    pictureId: 1
 }
 
-export let emptyRole = {
+export const emptyRole = {
     id: 0,
     name: ""
 }
 
-export let emptyOrganization: Organization = {
+export const emptyOrganization: Organization = {
     id: 0,
     title: "",
     description: "",
@@ -99,7 +110,7 @@ export let emptyOrganization: Organization = {
     active: false,
 }
 
-export let emptyOrganizationCreate: OrganizationCreate = {
+export const emptyOrganizationCreate: OrganizationCreate = {
     name: "",
     description: "",
     owner: "",

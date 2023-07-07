@@ -1,7 +1,7 @@
+import {getTokenKeyCloak} from "../util/KeyCloakToken";
 import {axiosCustom} from "./AxiosConfig";
-import {getToken} from "../util/TokenUtil";
 
-const orders = axiosCustom('http://localhost:5555/core/api/v1/orders', getToken());
+const orders = axiosCustom('http://localhost:5555/core/api/v1/orders', getTokenKeyCloak());
 
 export const apiGetUserOrders = () => orders.get("");
 
